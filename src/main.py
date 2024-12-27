@@ -67,3 +67,5 @@ interface = gr.Interface(
     title="ИИ-консультант по JSON-документации"
 )
 interface.launch()
+
+#for testcommit
