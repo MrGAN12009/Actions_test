@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0  # Fetch all branches
           token: ${{ secrets.TARGET_REPO_TOKEN }}
 
       - name: Set up Git
@@ -22,7 +22,8 @@ jobs:
           echo "Setting up Git configuration"
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-      - name: backup branch
+
+      - name: Create backup branch
         id: create_branch
         run: |
           echo "Creating backup branch"
@@ -31,20 +32,19 @@ jobs:
           echo "Branch name: $BRANCH_NAME"
           git checkout -b $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-      - name: backup remote
+
+      - name: Add backup remote
         run: |
           echo "Adding remote backup repository"
-          git remote add backup https://${{ secrets.TARGET_REPO_TOKEN }}@github.com/moanxxx/test_workflou11
+          git remote add backup https://${{ secrets.TARGET_REPO_TOKEN }}@github.com/StanislavProg/Tehspec_Daniil
           git remote -v  # List remotes to verify
-      - name: Pulling changes
+
+      - name: Pull changes from backup repository
         run: |
           echo "Pulling changes from backup repository"
           git pull backup main --rebase || echo "No changes to pull"
-      - name: Check PAT permissions
-        run: |
-          echo "Checking PAT permissions"
-          curl -H "Authorization: token ${{ secrets.TARGET_REPO_TOKEN }}" https://api.github.com/user/repos
-      - name: Push
+
+      - name: Push to backup repository
         run: |
           echo "Pushing to remote repository"
-          git push backup ${{ env.BRANCH_NAME }} --force        
+          git push backup ${{ env.BRANCH_NAME }} --force
